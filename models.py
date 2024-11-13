@@ -25,6 +25,12 @@ class Categorie(Enum):
     humain = 1
     ordinateur = 2
 
+def random_gen():
+    seed = int(time.time()) ^ int(time.perf_counter() * 1_000_000)
+    random.seed(seed)
+    return random.randint(1, 1000)
+
+
 class Joueur:
     def __init__(self, nom_joueur: str, categorie: str, motif: str, motif_texte:str):  # categorie: humain ou ordinateur
         self.nom:str = nom_joueur
@@ -226,7 +232,7 @@ class Model:
 
     def faire_jouer_ordinateur(self)->tuple[int, int, bool]:
         tableau = []
-
+        cell_played: Cellule
         # Balyage des cellules vides pour les évaluer
         for ligne in range(self.taille_grille):
             for colonne in range(self.taille_grille):
@@ -239,24 +245,87 @@ class Model:
         # for i in range(len(tableau)):
         #     print(f"ordinateur_joue: {i} : {tableau[i]}")
         #print(f"faire_jouer_ordinateur: choice(tableau) = {choice(tableau)}")
-        if len(tableau)==1:
-            ligne, colonne, grade = tableau[0]
-            print(f"faire_jouer_ordinateur: Dernière case ligne = {ligne}, colonne = {colonne}, grade = {grade}")
-        else:
-            match self.niveau:
-                case "Facile":
-                    ligne, colonne, grade = choice(tableau)
-                    print(f"faire_jouer_ordinateur: Facile ligne = {ligne}, colonne = {colonne}, grade = {grade}")
-                case "Difficile":
-                    ligne, colonne, grade = choice(tableau[1:]) # random.randint(1, len(tableau)-1)
-                    print(f"faire_jouer_ordinateur: Difficile ligne = {ligne}, colonne = {colonne}, grade = {grade}")
-                case "Expert":
-                    ligne, colonne, grade = tableau[0]
-                    print(f"faire_jouer_ordinateur: Expert ligne = {ligne}, colonne = {colonne}, grade = {grade}")
-        self.mettre_a_jour_la_grille(ligne, colonne)
-        return ligne, colonne, True
+        # randomize selection
+        dice = random.randint(0, 300)  # Assuming a range for randomGen
+        print(f"log: autoPlay() dice: {dice}")
+
+        # select best playingOption
+        if dice > 200:
+            x=tableau[0][0]
+            y=tableau[0][1]
+            #cell_played = {'x': tableau[0][0], 'y': tableau[0][1]}
+        # select random playingOption
+        else :
+            index = 75 % len(tableau)
+            x = tableau[index][0]
+            y = tableau[index][1]
+            # cell_played = {'x': tableau[index][0], 'y': tableau[index][1]}
+        # # select random playingOption
+        # elif dice > 50:
+        #     index = dice % len(tableau)
+        #     x=tableau[index][0]
+        #     y=tableau[index][1]
+        #     #cell_played = {'x': tableau[index][0], 'y': tableau[index][1]}
+        # else:
+        #     # select worst playingOption
+        #     x=tableau[-1][0]
+        #     y=tableau[-1][1]
+            #cell_played = {'x': tableau[-1][0], 'y': tableau[-1][1]}
+        self.mettre_a_jour_la_grille(x, y)
+        return x, y, True
+        # if len(tableau)==1:
+        #     ligne, colonne, grade = tableau[0]
+        #     print(f"faire_jouer_ordinateur: Dernière case ligne = {ligne}, colonne = {colonne}, grade = {grade}")
+        # else:
+        #     match self.niveau:
+        #         case "Facile":
+        #             ligne, colonne, grade = choice(tableau)
+        #             print(f"faire_jouer_ordinateur: Facile ligne = {ligne}, colonne = {colonne}, grade = {grade}")
+        #         case "Difficile":
+        #             ligne, colonne, grade = choice(tableau[1:]) # random.randint(1, len(tableau)-1)
+        #             print(f"faire_jouer_ordinateur: Difficile ligne = {ligne}, colonne = {colonne}, grade = {grade}")
+        #         case "Expert":
+        #             ligne, colonne, grade = tableau[0]
+        #             print(f"faire_jouer_ordinateur: Expert ligne = {ligne}, colonne = {colonne}, grade = {grade}")
+        # self.mettre_a_jour_la_grille(ligne, colonne)
+        # return ligne, colonne, True
 
     # --------------------------------------------------------------------------
+
+
+    def auto_play(board):
+        options = []
+        cell_played : Cellule
+        # find all empty cells to evaluate them.
+        for i in range(len(board)):
+            for j in range(len(board[0])):
+                if board[i][j] == ' ':
+                    new_option = (i, j, evaluate_cell(i, j))
+                    options.append(new_option)
+
+        # sort options
+        options.sort(key=lambda x: x[2])  # Assuming the third element is the grade
+
+        # randomize selection
+        dice = random.randint(0, 300)  # Assuming a range for randomGen
+        print(f"log: autoPlay() dice: {dice}")
+
+        # select best playingOption
+        if dice > 200:
+            cell_played = {'x': options[0][0], 'y': options[0][1]}
+        # select random playingOption
+        elif dice > 50:
+            index = dice % len(options)
+            cell_played = {'x': options[index][0], 'y': options[index][1]}
+        else:
+            # select worst playingOption
+            cell_played = {'x': options[-1][0], 'y': options[-1][1]}
+
+        return cell_played
+
+
+
+
 
     def faire_joueur_humain(self, ligne, colonne, reponse:bool):
         # Cette fonction traite le clic gauche

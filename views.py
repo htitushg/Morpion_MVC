@@ -3,6 +3,9 @@ from tkinter import *
 import tkinter as Tk
 from tkinter import ttk
 
+from click import command
+from uaclient.api.u.pro.services.disable.v1 import disable
+
 from models import *
 
 class View(ttk.Frame):
@@ -13,145 +16,167 @@ class View(ttk.Frame):
         self.liste_categories = Model.categories
         self.liste_niveaux = Model.niveaux
         self.liste_joueurs = ["", ""]
+        self.controller = None
         # Création des éléments graphiques
 
-        # Bouton pour déclencher la demande de mode, de nom, de niveau ... et de catégorie
-        self.btn_demander = ttk.Button(self,
-                                      text="Choisir mode de jeu, catégorie de joueur et niveau de jeu", width=50,
-                                      command=self.demander_options)
-        self.btn_demander.pack()
-        # set the controller
-        self.controller = None
-
-
-    def demander_options(self):
-        self.btn_demander.pack_forget()
         # Création dynamique des menus déroulants, bouton, zones d'entrées...
-        #On crée une zone de texte pour des messages de recommandation
+
+        ################ Création frame qui va contenir les deux autres#############
+        self.frame=ttk.Frame(self)
+        ################ Création frame de gauche #############
+        self.left_frame = ttk.Frame(self.frame)  # , bg='#4065A4')
+        for i in range(10):  # Supposons 3 lignes à aligner
+            self.left_frame.grid_rowconfigure(i, minsize=35, weight=0)
+
+        self.label_mode = ttk.Label(self.left_frame, text="Choisissez le mode", width=30, font=('Helvetica', 12))
+        self.label_mode.grid(row=1, column=0)
+        # On crée le label nom_1)
+        self.label_nom_1 = ttk.Label(self.left_frame, text="Nom du Joueur 1", width=30, font=('Helvetica', 12))
+        self.label_nom_1.grid(row=2, column=0)
+
+        # On crée le label nom_2)
+        self.label_nom_2 = ttk.Label(self.left_frame, text="Nom du Joueur 2", width=30, font=('Helvetica', 12))
+        self.label_nom_2.grid(row=3, column=0)
+
+        self.label_categorie_1 = ttk.Label(self.left_frame, text="Catégorie 1", width=30, font=('Helvetica', 12))
+        self.label_categorie_1.grid(row=4, column=0)
+
+        self.label_categorie_2 = ttk.Label(self.left_frame, text="Catégorie 2", width=30, font=('Helvetica', 12))
+        self.label_categorie_2.grid(row=5, column=0)
+
+        self.label_niveau = ttk.Label(self.left_frame, text="Choisisez le niveau", width=30, font=('Helvetica', 12))
+        self.label_niveau.grid(row=6, column=0)
+
+        self.label_joueur_qui_commence = ttk.Label(self.left_frame, text="Qui commence ?", width=30, font=('Helvetica', 12))
+        self.label_joueur_qui_commence.grid(row=7, column=0)
+
+
+
+
+        self.left_frame.grid(row=0, column=0)
+
+        ################ Création frame de droite #############
+        self.right_frame = ttk.Frame(self.frame)#, bg='#4065A4')
+        for i in range(10):  # Supposons 3 lignes à aligner
+            self.right_frame.grid_rowconfigure(i, minsize=35, weight=0)
+        # On crée une zone de texte pour des messages de recommandation
         self.msg_text = StringVar()
-        self.msg = ttk.Label(self, textvariable=self.msg_text, font=('Helvetica', 12))
-        self.msg.pack()
+        self.msg = ttk.Label(self.right_frame, textvariable=self.msg_text, width=30, font=('Helvetica', 12))
+        self.msg.grid(row=0, column=1)
         self.mode_var = StringVar(value=self.liste_modes[0])
-        self.mode_options = OptionMenu(self, self.mode_var, *self.liste_modes)
-        self.mode_options.config(width=15, font=('Helvetica', 12))
-        self.mode_options.pack()
+        self.mode_options = OptionMenu(self.right_frame, self.mode_var, *self.liste_modes)
+        self.mode_options.config(width=30, font=('Helvetica', 12))
+        self.mode_options.grid(row=1, column=1)
+
         # On crée le controle nom_1)
-        self.label_nom_1 = ttk.Label(self, text="Nom du Joueur", font=('Helvetica', 12))
-        #self.label_nom_1.pack()
         self.nom_1_entry = StringVar()
-        self.entry_nom_1 = ttk.Entry(self, textvariable=self.nom_1_entry)
-        #self.entry_nom_1.pack()
+        self.entry_nom_1 = ttk.Entry(self.right_frame, textvariable=self.nom_1_entry, font=('Helvetica', 12))#, command= self.mise_a_jour_nom_1)
+        self.entry_nom_1.config(state=DISABLED, width=30)
+        self.entry_nom_1.grid(row=2, column=1, ipadx=18, ipady=3)
+
         # On crée le controle nom_2)
-        self.label_nom_2 = ttk.Label(self, text="Nom du Joueur", font=('Helvetica', 12))
-        #self.label_nom_2.pack()
         self.nom_2_entry = StringVar()
-        self.entry_nom_2 = ttk.Entry(self, textvariable=self.nom_2_entry)
-        #self.entry_nom_2.pack()
+        self.entry_nom_2 = ttk.Entry(self.right_frame, textvariable=self.nom_2_entry, font=('Helvetica', 12))#, command= self.mise_a_jour_nom_2)
+        self.entry_nom_2.config(state=DISABLED, width=30)
+        self.entry_nom_2.grid(row=3, column=1, ipadx=18, ipady=3)
+
         # On crée le controle catégorie du joueur 1
-        self.categorie_1_var = StringVar(value=self.liste_categories[0])
-        self.categorie_1_options = OptionMenu(self, self.categorie_1_var, *self.liste_categories)
-        self.categorie_1_options.config(width=15, font=('Helvetica', 12))
-        #self.categorie_1_options.pack()
+        self.categorie_1_var = StringVar()
+        self.categorie_1 = ttk.Label(self.right_frame, textvariable=self.categorie_1_var, width=30, relief='ridge',
+                                  font=('Helvetica', 12))
+        self.categorie_1.grid(row=4, column=1, ipadx=18, ipady=3)
+
         # On crée le controle catégorie du joueur 2
-        self.categorie_2_var = StringVar(value=self.liste_categories[0])
-        self.categorie_2_options = OptionMenu(self, self.categorie_2_var, *self.liste_categories)
-        self.categorie_2_options.config(width=15, font=('Helvetica', 12))
-        #self.categorie_2_options.pack()
+        self.categorie_2_var = StringVar()
+        self.categorie_2 = ttk.Label(self.right_frame, textvariable=self.categorie_2_var, width=30, relief='ridge',
+                                     font=('Helvetica', 12))
+        self.categorie_2.grid(row=5, column=1, ipadx=18, ipady=3)
+
         # On crée le controle niveau
         self.niveau_var = StringVar(value=self.liste_niveaux[0])
-        self.niveau_options = OptionMenu(self, self.niveau_var,self.liste_niveaux[1] ,*self.liste_niveaux)
-        self.niveau_options.config(width=15, font=('Helvetica', 12))
-        #self.niveau_options.pack()
+        self.niveau_options = OptionMenu(self.right_frame, self.niveau_var,self.liste_niveaux[1] ,*self.liste_niveaux)
+        self.niveau_options.config(width=30, font=('Helvetica', 12))
+        self.niveau_options.config(state=DISABLED)
+        self.niveau_options.grid(row=6, column=1)
+
         # On crée le controle joueur qui commence
         self.joueur_qui_commence_var = StringVar()
         self.joueur_qui_commence_var.set(self.nom_1_entry.get())
         self.liste_joueurs=[self.nom_1_entry.get(),self.nom_2_entry.get()]
-        self.joueur_qui_commence_options = OptionMenu(self, self.joueur_qui_commence_var, *self.liste_joueurs)
-        self.joueur_qui_commence_options.config(width=15, font=('Helvetica', 12))
-        #self.joueur_qui_commence_options.pack()
+        self.joueur_qui_commence_options = OptionMenu(self.right_frame, self.joueur_qui_commence_var, "Qui commence ?",*self.liste_joueurs)
+        self.joueur_qui_commence_options.config(width=30, font=('Helvetica', 12))
+        self.joueur_qui_commence_options.config(state=DISABLED)
+        self.joueur_qui_commence_options.grid(row=7, column=1)
+
         # Bouton pour confirmer les choix
-        self.btn_confirmer = Tk.Button(self, text="Confirmer", command=self.confirmer_choix)
-        self.btn_confirmer.pack_forget()
+        self.btn_confirmer = Tk.Button(self.right_frame, text="Confirmer", width=30, command=self.confirmer_choix)
+        self.btn_confirmer.config(state=DISABLED)
+        self.btn_confirmer.grid(row=9, column=1, ipadx=20, ipady=3)
+
+        self.right_frame.grid(row=0, column=1)
+
+        self.frame.pack()
 
 
-
-
-        def mettre_a_jour_affichage(a, b, c):
-            # ... (placement et configuration de l'OptionMenu)
-            if self.mode_var.get()=="Choisir_mode":
-                self.label_nom_1.pack_forget()
-                self.entry_nom_1.pack_forget()
-                self.label_nom_2.pack_forget()
-                self.entry_nom_2.pack_forget()
-                self.categorie_1_options.pack_forget()
-                self.categorie_2_options.pack_forget()
-                self.niveau_options.pack_forget()
-                self.joueur_qui_commence_options.pack_forget()
-                self.btn_confirmer.pack_forget()
-            elif self.mode_var.get()=="automatique":
-                #self.mode_options.pack_forget()
+        def mettre_a_jour_mode(a, b, c):
+            if self.mode_var.get()=="automatique":
                 self.nom_1_entry.set("IA_1")
                 self.categorie_1_var.set(self.liste_categories[2])
                 self.nom_2_entry.set("IA_2")
                 self.categorie_2_var.set(self.liste_categories[2])
                 self.niveau_var.set(self.liste_niveaux[1])
                 self.joueur_qui_commence_var.set("IA_1")
-                self.btn_confirmer.pack()
+                self.btn_confirmer.config(state='normal')
             elif self.mode_var.get()=="un_joueur": # Un joueur humain
-                self.btn_confirmer.pack_forget()
-                self.label_nom_1.pack()
-                self.entry_nom_1.pack()
-                if self.verifier_nom(self.nom_1_entry.get()):
-                    self.nom_2_entry.set("IA_2")
+                self.entry_nom_1.config(state='normal')
+                self.btn_confirmer.config(state=DISABLED)
+            else: # Deux joueurs humains
+                self.entry_nom_1.config(state='normal')
+                self.entry_nom_2.config(state='normal')
+                self.btn_confirmer.config(state=DISABLED)
+
+        def mettre_a_jour_nom_1(a, b, c):
+            if not self.entry_nom_1 =="":
+                if self.mode_var.get() == self.liste_modes[2]:
                     self.categorie_1_var.set(self.liste_categories[1])
                     self.categorie_2_var.set(self.liste_categories[2])
-                    self.niveau_options.pack()
-                    print(f"Niveau choisi: {self.niveau_var.get()}")
-                    #if not (self.niveau_var.get()== liste_niveaux[0]):
-                    self.joueur_qui_commence_options.pack()
-                    if self.joueur_qui_commence_var.get() not in (self.nom_1_entry.get(),self.nom_2_entry.get()) :
-                        result_nom = 'Vous devez choisir le joueur qui commence(joueur 1/joueur 2)'
-                        self.msg_text.set(result_nom)
-                    else:
-                        self.joueur_qui_commence_var.get()
-                        self.btn_confirmer.pack()
-                    # else:
-                    #     result_nom = 'Vous devez choisir le niveau de jeu'
-                    #     self.msg_text.set(result_nom)
-
-            else: # deux joueurs humains
-                self.btn_confirmer.pack_forget()
-                self.label_nom_1.pack()
-                self.entry_nom_1.pack()
-                self.label_nom_2.pack()
-                self.entry_nom_2.pack()
-                if self.verifier_nom(self.nom_1_entry.get()) and self.verifier_nom(self.nom_2_entry.get()):
-                    self.categorie_1_var.set(self.liste_categories[1])
-                    self.categorie_2_var.set(self.liste_categories[1])
-                    #self.niveau_options.pack()
-                    self.joueur_qui_commence_options.pack()
-                    if self.verifier_nom(self.nom_1_entry.get() and self.verifier_nom(self.nom_2_entry.get())):
+                    self.nom_2_entry.set("IA")
+                    self.niveau_options.config(state='normal')
+                elif self.mode_var.get() == self.liste_modes[3]:
+                    if not self.entry_nom_2 == "":
                         self.categorie_1_var.set(self.liste_categories[1])
                         self.categorie_2_var.set(self.liste_categories[1])
-                        self.niveau_options.pack()
-                        #if not self.niveau_var.get() == liste_niveaux[0]:
-                        self.joueur_qui_commence_options.pack()
-                        if self.joueur_qui_commence_var.get() not in (self.nom_1_entry.get(),self.nom_2_entry.get()) :
-                            result_nom = 'Vous devez choisir le joueur qui commence(joueur/ordinateur)'
-                            self.msg_text.set(result_nom)
-                        else:
-                            self.joueur_qui_commence_var.get()
-                            self.btn_confirmer.pack()
-                        # else:
-                        #     result_nom = 'Vous devez choisir le niveau du jeu'
-                        #     self.msg_text.set(result_nom)
-                # else:
-                #     result_nom = 'Vous devez entrer le nom des deux joueurs'
-                #     self.msg_text.set(result_nom)
+                        self.niveau_options.config(state='normal')
 
-        def mettre_a_jour_liste_joueurs(a,b,c):
-            self.liste_joueurs = [self.nom_1_entry.get(), self.nom_2_entry.get()]
-            self.joueur_qui_commence_options.configure(menu=create_menu(self.liste_joueurs))
+        def mettre_a_jour_nom_2(a, b, c):
+            if not self.entry_nom_2 =="":
+                if self.mode_var.get() == self.liste_modes[2]:
+                    self.categorie_1_var.set(self.liste_categories[1])
+                    self.categorie_2_var.set(self.liste_categories[2])
+                    self.nom_2_entry.set("IA")
+                    self.niveau_options.config(state='normal')
+                elif self.mode_var.get() == self.liste_modes[3]:
+                    if not self.entry_nom_1 == "":
+                        self.categorie_1_var.set(self.liste_categories[1])
+                        self.categorie_2_var.set(self.liste_categories[1])
+                        self.niveau_options.config(state='normal')
+
+        def mettre_a_jour_niveau(a, b, c):
+            if not (self.niveau_var.get() == self.liste_niveaux[0]):
+                self.liste_joueurs = [self.nom_1_entry.get(), self.nom_2_entry.get()]
+                self.joueur_qui_commence_options.configure(menu=create_menu(self.liste_joueurs))
+                self.joueur_qui_commence_options.config(state='normal')
+            else:
+                result_nom = 'Vous devez choisir le niveau de jeu'
+                self.msg_text.set(result_nom)
+
+        def mettre_a_jour_joueur_qui_commence(a, b, c):
+            if self.joueur_qui_commence_var.get() not in (self.nom_1_entry.get(), self.nom_2_entry.get()):
+                result_nom = 'Vous devez choisir le joueur qui commence(joueur 1/joueur 2)'
+                self.msg_text.set(result_nom)
+            else:
+                self.joueur_qui_commence_var.get()
+                self.btn_confirmer.config(state='normal')
 
         def create_menu(values):
             menu = Menu(self.joueur_qui_commence_options)
@@ -160,12 +185,13 @@ class View(ttk.Frame):
             return menu
 
 
-
         # Assurez-vous que nom_1_entry.get() et nom_2_entry.get() sont des StringVar()
-        self.nom_1_entry.trace("w", mettre_a_jour_liste_joueurs)
-        self.nom_2_entry.trace("w", mettre_a_jour_liste_joueurs)
-        self.mode_var.trace("w", mettre_a_jour_liste_joueurs)
-        self.mode_var.trace("w", mettre_a_jour_affichage)
+        self.mode_var.trace_add("write", mettre_a_jour_mode)
+        self.nom_1_entry.trace_add("write", mettre_a_jour_nom_1)
+        self.nom_2_entry.trace_add("write", mettre_a_jour_nom_2)
+        self.niveau_var.trace_add("write", mettre_a_jour_niveau)
+        self.joueur_qui_commence_var.trace_add("write", mettre_a_jour_joueur_qui_commence)
+
         # Récupération des valeurs sélectionnées par l'utilisateur
 
     def verifier_nom(self, nom):
@@ -206,6 +232,8 @@ class TableauDeJeu(ttk.Frame):
 
         self.taille_grille = taille_grille
         self.game = Canvas(self, width=405, height=405, bg="lightgrey")
+        self.game['highlightbackground'] = 'black'
+        self.game['highlightthickness'] = 2  # change the highlight thickness!
         self.game.place(x=0, y=0, width=405, height=405)
         self.config(width=405, height=405)  # self.frameTableauJeu.pack()
         self.grille = [[' ' for _ in range(taille_grille)] for _ in range(taille_grille)]
@@ -256,8 +284,8 @@ class TableauDeJeu(ttk.Frame):
 
         self.grid(row=0, column=0, padx=10, pady=10)
 
-    def cacher(self):
-        self.place_forget()
+    # def cacher(self):
+    #     self.place_forget()
 
     def mettre_a_jour_case(self, x, y, motif):
         self.game.create_image( x , y , anchor = 'center', image = motif)

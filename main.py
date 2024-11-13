@@ -7,7 +7,11 @@ class App(tk.Tk):
         super().__init__()
 
         self.title('Jeu du morpion')
-
+        self.geometry("730x530")
+        self.resizable(height = None, width = None)
+        # self.minsize(650, 500)
+        # self.maxsize(650, 500)
+        #self.config(background='#41B77F')
         # create a view and place it on the root window
         view = View(self)
         view.grid(row=0, column=0, padx=10, pady=10)
