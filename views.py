@@ -245,31 +245,104 @@ class TableauDeJeu(ttk.Frame):
         # Liaison de l'événement clic gauche au canvas
         self.game.bind("<Button-1>", self.gestion_clic_gauche)
         self.game.bind("<Button-3>", self.gestion_clic_droit)
+        # Création d'une frame à droite du tableau de jeu
+        self.frame_right = Frame(self, width=265, height= 425)
+        # Création à l'intérieur de la frame_right
+        # de deux frames pour séparer les libellés et le contenu
+        self.frame_data_left = Frame(self.frame_right)
+        # Déterminer la taille minimum des champs
+        for i in range(8):  # Supposons 3 lignes à aligner
+            self.frame_data_left.grid_rowconfigure(i, minsize=35, weight=0)
+
+        self.label_mode = ttk.Label(self.frame_data_left, text="Mode choisi", width=17, font=('Helvetica', 12))
+        self.label_mode.grid(row=0, column=0)
+
+        self.label_mode = ttk.Label(self.frame_data_left, text="Nom joueur 1", width=17, font=('Helvetica', 12))
+        self.label_mode.grid(row=1, column=0)
+
+        # self.label_mode = ttk.Label(self.frame_data_left, text="Catégorie 1", width=17, font=('Helvetica', 12))
+        # self.label_mode.grid(row=4, column=0)
+
+        self.label_mode = ttk.Label(self.frame_data_left, text="Nom joueur 2", width=17, font=('Helvetica', 12))
+        self.label_mode.grid(row=2, column=0)
+
+        # self.label_mode = ttk.Label(self.frame_data_left, text="Catégorie 2", width=17, font=('Helvetica', 12))
+        # self.label_mode.grid(row=5, column=0)
+
+        self.label_mode = ttk.Label(self.frame_data_left, text="Niveau choisi", width=17, font=('Helvetica', 12))
+        self.label_mode.grid(row=3, column=0)
+
+        self.label_mode = ttk.Label(self.frame_data_left, text="Celui qui commence", width=17, font=('Helvetica', 12))
+        self.label_mode.grid(row=4, column=0)
+
+        self.frame_data_left.grid(row=0, column=0)
+
+        self.frame_data_right = Frame(self.frame_right)
+        # Déterminer la taille minimum des champs
+        for i in range(8):  # Supposons 3 lignes à aligner
+            self.frame_data_right.grid_rowconfigure(i, minsize=35, weight=0)
 
         self.mode_jeu_text = StringVar()
-        self.mode_jeu = ttk.Label(self, textvariable=self.mode_jeu_text, width=50, relief='ridge', font=('Helvetica', 12))
-        self.mode_jeu.place(x=450, y=10)
+        self.mode_jeu = ttk.Label(self.frame_data_right, textvariable=self.mode_jeu_text, width=10, relief='ridge',
+                                  font=('Helvetica', 12))
+        self.mode_jeu.grid(row=0, column=0, ipadx=12, ipady=1)
 
         self.nom_j_1_text = StringVar()
-        self.nom_j_1 = ttk.Label(self, textvariable=self.nom_j_1_text, width=50, relief='ridge',  font=('Helvetica', 12))
-        self.nom_j_1.place(x= 450, y=40 )
+        self.nom_j_1 = ttk.Label(self.frame_data_right, textvariable=self.nom_j_1_text, width=10, relief='ridge',
+                                 font=('Helvetica', 12))
+        self.nom_j_1.grid(row=1, column=0, ipadx=12, ipady=1)
 
         self.nom_j_2_text = StringVar()
-        self.nom_j_2 = ttk.Label(self, textvariable=self.nom_j_2_text,  width=50, relief='ridge', font=('Helvetica', 12))
-        self.nom_j_2.place(x=450, y=70)
+        self.nom_j_2 = ttk.Label(self.frame_data_right, textvariable=self.nom_j_2_text, width=10, relief='ridge',
+                                 font=('Helvetica', 12))
+        self.nom_j_2.grid(row=2, column=0, ipadx=12, ipady=1)
 
         self.niveau_text = StringVar()
-        self.niveau_jeu = ttk.Label(self, textvariable=self.niveau_text,  width=50, relief='ridge', borderwidth=2, font=('Helvetica', 12))
-        self.niveau_jeu.place(x= 450, y=100)
+        self.niveau_jeu = ttk.Label(self.frame_data_right, textvariable=self.niveau_text, width=10, relief='ridge',
+                                    borderwidth=2, font=('Helvetica', 12))
+        self.niveau_jeu.grid(row=3, column=0, ipadx=12, ipady=1)
 
         self.qui_commence_text = StringVar()
-        self.qui_commence = ttk.Label(self, textvariable=self.qui_commence_text, width=50, relief='ridge', borderwidth=2,
-                                    font=('Helvetica', 12))
-        self.qui_commence.place(x=450, y=130)
+        self.qui_commence = ttk.Label(self.frame_data_right, textvariable=self.qui_commence_text, width=10, relief='ridge',
+                                      borderwidth=2,
+                                      font=('Helvetica', 12))
+        self.qui_commence.grid(row=4, column=0, ipadx=12, ipady=1)
+
+        self.frame_data_right.grid(row=0, column=1)
+        self.frame_right.place(x=420, y=0)
 
         self.resultat_jeu_text = StringVar()
-        self.resultat_jeu = ttk.Label(self, textvariable=self.resultat_jeu_text, justify=CENTER, relief='ridge', borderwidth=2,font=('Helvetica', 12))
+        self.resultat_jeu = ttk.Label(self, textvariable=self.resultat_jeu_text, justify=CENTER,
+                                      relief='ridge', borderwidth=2, font=('Helvetica', 12))
         self.resultat_jeu.place(x=350, y=420, anchor='center')
+
+
+        # self.mode_jeu_text = StringVar()
+        # self.mode_jeu = ttk.Label(self.frame_data, textvariable=self.mode_jeu_text, width=50, relief='ridge', font=('Helvetica', 12))
+        # self.mode_jeu.place(x=450-425, y=10)
+        #
+        # self.nom_j_1_text = StringVar()
+        # self.nom_j_1 = ttk.Label(self.frame_data, textvariable=self.nom_j_1_text, width=50, relief='ridge',  font=('Helvetica', 12))
+        # self.nom_j_1.place(x= 450-425, y=40 )
+        #
+        # self.nom_j_2_text = StringVar()
+        # self.nom_j_2 = ttk.Label(self.frame_data, textvariable=self.nom_j_2_text,  width=50, relief='ridge', font=('Helvetica', 12))
+        # self.nom_j_2.place(x=450-425, y=70)
+        #
+        # self.niveau_text = StringVar()
+        # self.niveau_jeu = ttk.Label(self.frame_data, textvariable=self.niveau_text,  width=50, relief='ridge', borderwidth=2, font=('Helvetica', 12))
+        # self.niveau_jeu.place(x= 450-425, y=100)
+        #
+        # self.qui_commence_text = StringVar()
+        # self.qui_commence = ttk.Label(self.frame_data, textvariable=self.qui_commence_text, width=50, relief='ridge', borderwidth=2,
+        #                             font=('Helvetica', 12))
+        # self.qui_commence.place(x=450-425, y=130)
+        #
+        # self.resultat_jeu_text = StringVar()
+        # self.resultat_jeu = ttk.Label(self.frame_data, textvariable=self.resultat_jeu_text, justify=CENTER, relief='ridge', borderwidth=2,font=('Helvetica', 12))
+        # self.resultat_jeu.place(x=350, y=420, anchor='center')
+        #
+        # self.frame_data.place(x=425, y= 0)
 
         self.btn_rejouer = Tk.Button(self, text="Rejouer", width=50, font=('Helvetica', 12, 'bold'), command=self.controller.rejouer)
         self.btn_rejouer.place(x= 350, y=440, anchor='center')
@@ -291,11 +364,11 @@ class TableauDeJeu(ttk.Frame):
         self.game.create_image( x , y , anchor = 'center', image = motif)
 
     def mettre_a_jour_donnees(self, mode, nom_joueur_1, nom_joueur_2, niveau_jeu, nom_joueur, disable_rejouer):
-        self.mode_jeu_text.set(f"Mode de jeu       : {mode}")
-        self.nom_j_1_text.set(f"Nom du joueur 1 : {nom_joueur_1}")
-        self.nom_j_2_text.set(f"Nom du joueur 2 : {nom_joueur_2}")
-        self.niveau_text.set(f"Niveau de jeu : {niveau_jeu}")
-        self.qui_commence_text.set(f"Joueur qui commence : {nom_joueur}")
+        self.mode_jeu_text.set(f"{mode}")
+        self.nom_j_1_text.set(f"{nom_joueur_1}")
+        self.nom_j_2_text.set(f"{nom_joueur_2}")
+        self.niveau_text.set(f"{niveau_jeu}")
+        self.qui_commence_text.set(f"{nom_joueur}")
         if disable_rejouer:
             self.btn_rejouer.config(state=DISABLED )
             self.resultat_jeu.place_forget()
