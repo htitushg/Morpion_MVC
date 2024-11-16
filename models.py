@@ -64,7 +64,8 @@ class Model:
         self.controller=controller
         self.mode=mode_choisi
         self.niveau=niveau_choisi
-        self.joueur_qui_commence=joueur_qui_commence
+
+        self.joueur_qui_commence = joueur_qui_commence
         if joueur_qui_commence == self.joueur_1.nom:
             self.joueur_en_cours = self.joueur_1
         else:
@@ -77,13 +78,13 @@ class Model:
 
     @staticmethod
     def new(controller, mode_choisi, nom_1, nom_2, categorie_1_choisie, categorie_2_choisie, niveau_choisi, joueur_qui_commence) -> "Model":
-        print("Mode choisi:", mode_choisi)
-        print("Nom joueur 1:", nom_1)
-        print("Catégorie du joueur 1:", categorie_1_choisie)
-        print("Nom joueur 2:", nom_2)
-        print("Catégorie du joueur 2:", categorie_2_choisie)
-        print("Niveau choisi:", niveau_choisi)
-        print("Joueur qui commence:", joueur_qui_commence)
+        # print("Mode choisi:", mode_choisi)
+        # print("Nom joueur 1:", nom_1)
+        # print("Catégorie du joueur 1:", categorie_1_choisie)
+        # print("Nom joueur 2:", nom_2)
+        # print("Catégorie du joueur 2:", categorie_2_choisie)
+        # print("Niveau choisi:", niveau_choisi)
+        # print("Joueur qui commence:", joueur_qui_commence)
         #Appel du constructeur Model : "__init__"
         return Model( controller, mode_choisi, nom_1, nom_2, categorie_1_choisie, categorie_2_choisie, niveau_choisi, joueur_qui_commence)
 
@@ -132,6 +133,8 @@ class Model:
             self.joueur_en_cours = self.joueur_2
         else:
             self.joueur_en_cours = self.joueur_1
+        self.controller.mise_a_jour_joueur_qui_doit_jouer(self.joueur_en_cours.nom)
+
 
     def donne_autre_joueur(self):
         if self.joueur_en_cours==self.joueur_1:
@@ -250,13 +253,14 @@ class Model:
         print(f"log: autoPlay() dice: {dice}")
 
         # select best playingOption
-        if dice > 200:
+        if dice > 200 or self.niveau  == self.niveaux[3]:
             x=tableau[0][0]
             y=tableau[0][1]
             #cell_played = {'x': tableau[0][0], 'y': tableau[0][1]}
         # select random playingOption
-        else :
+        elif self.niveau  == self.niveaux[2]:
             index = 75 % len(tableau)
+            print(f"len(tableau= {len(tableau)}, index= {index}")
             x = tableau[index][0]
             y = tableau[index][1]
             # cell_played = {'x': tableau[index][0], 'y': tableau[index][1]}
@@ -266,12 +270,13 @@ class Model:
         #     x=tableau[index][0]
         #     y=tableau[index][1]
         #     #cell_played = {'x': tableau[index][0], 'y': tableau[index][1]}
-        # else:
-        #     # select worst playingOption
-        #     x=tableau[-1][0]
-        #     y=tableau[-1][1]
+        else:
+            # select worst playingOption
+            x=tableau[-1][0]
+            y=tableau[-1][1]
             #cell_played = {'x': tableau[-1][0], 'y': tableau[-1][1]}
         self.mettre_a_jour_la_grille(x, y)
+        print(f"x= {x}, y= {y}")
         return x, y, True
         # if len(tableau)==1:
         #     ligne, colonne, grade = tableau[0]
@@ -293,35 +298,35 @@ class Model:
     # --------------------------------------------------------------------------
 
 
-    def auto_play(board):
-        options = []
-        cell_played : Cellule
-        # find all empty cells to evaluate them.
-        for i in range(len(board)):
-            for j in range(len(board[0])):
-                if board[i][j] == ' ':
-                    new_option = (i, j, evaluate_cell(i, j))
-                    options.append(new_option)
-
-        # sort options
-        options.sort(key=lambda x: x[2])  # Assuming the third element is the grade
-
-        # randomize selection
-        dice = random.randint(0, 300)  # Assuming a range for randomGen
-        print(f"log: autoPlay() dice: {dice}")
-
-        # select best playingOption
-        if dice > 200:
-            cell_played = {'x': options[0][0], 'y': options[0][1]}
-        # select random playingOption
-        elif dice > 50:
-            index = dice % len(options)
-            cell_played = {'x': options[index][0], 'y': options[index][1]}
-        else:
-            # select worst playingOption
-            cell_played = {'x': options[-1][0], 'y': options[-1][1]}
-
-        return cell_played
+    # def auto_play(board):
+    #     options = []
+    #     cell_played : Cellule
+    #     # find all empty cells to evaluate them.
+    #     for i in range(len(board)):
+    #         for j in range(len(board[0])):
+    #             if board[i][j] == ' ':
+    #                 new_option = (i, j, evaluate_cell(i, j))
+    #                 options.append(new_option)
+    #
+    #     # sort options
+    #     options.sort(key=lambda x: x[2])  # Assuming the third element is the grade
+    #
+    #     # randomize selection
+    #     dice = random.randint(0, 300)  # Assuming a range for randomGen
+    #     print(f"log: autoPlay() dice: {dice}")
+    #
+    #     # select best playingOption
+    #     if dice > 200:
+    #         cell_played = {'x': options[0][0], 'y': options[0][1]}
+    #     # select random playingOption
+    #     elif dice > 50:
+    #         index = dice % len(options)
+    #         cell_played = {'x': options[index][0], 'y': options[index][1]}
+    #     else:
+    #         # select worst playingOption
+    #         cell_played = {'x': options[-1][0], 'y': options[-1][1]}
+    #
+    #     return cell_played
 
 
 

@@ -1,6 +1,6 @@
 
 from tkinter import *
-import tkinter as Tk
+# import tkinter as Tk
 from tkinter import ttk
 
 from click import command
@@ -12,29 +12,32 @@ class View(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
         # Liste des modes et catégories (à déplacer éventuellement ailleurs)
+        # self.liste_modes, self.liste_categories, self.liste_niveaux = self.controller.donne_modes_categories_niveaux()
         self.liste_modes = Model.modes
         self.liste_categories = Model.categories
         self.liste_niveaux = Model.niveaux
         self.liste_joueurs = ["", ""]
         self.controller = None
         # Création des éléments graphiques
-
         # Création dynamique des menus déroulants, bouton, zones d'entrées...
 
         ################ Création frame qui va contenir les deux autres#############
         self.frame=ttk.Frame(self)
         ################ Création frame de gauche #############
         self.left_frame = ttk.Frame(self.frame)  # , bg='#4065A4')
-        for i in range(10):  # Supposons 3 lignes à aligner
+        for i in range(10):  # Supposons 10 lignes à aligner
             self.left_frame.grid_rowconfigure(i, minsize=35, weight=0)
+
+        self.label_message = ttk.Label(self.left_frame, text="", width=30, font=('Helvetica', 12))
+        self.label_message.grid(row=0, column=0)
 
         self.label_mode = ttk.Label(self.left_frame, text="Choisissez le mode", width=30, font=('Helvetica', 12))
         self.label_mode.grid(row=1, column=0)
-        # On crée le label nom_1)
+        # On crée le label nom_1
         self.label_nom_1 = ttk.Label(self.left_frame, text="Nom du Joueur 1", width=30, font=('Helvetica', 12))
         self.label_nom_1.grid(row=2, column=0)
 
-        # On crée le label nom_2)
+        # On crée le label nom_2
         self.label_nom_2 = ttk.Label(self.left_frame, text="Nom du Joueur 2", width=30, font=('Helvetica', 12))
         self.label_nom_2.grid(row=3, column=0)
 
@@ -50,51 +53,48 @@ class View(ttk.Frame):
         self.label_joueur_qui_commence = ttk.Label(self.left_frame, text="Qui commence ?", width=30, font=('Helvetica', 12))
         self.label_joueur_qui_commence.grid(row=7, column=0)
 
-
-
-
         self.left_frame.grid(row=0, column=0)
 
         ################ Création frame de droite #############
-        self.right_frame = ttk.Frame(self.frame)#, bg='#4065A4')
-        for i in range(10):  # Supposons 3 lignes à aligner
-            self.right_frame.grid_rowconfigure(i, minsize=35, weight=0)
+        # self.right_frame = ttk.Frame(self.frame)#, bg='#4065A4')
+        # for i in range(10):  # Supposons 3 lignes à aligner
+        #     self.right_frame.grid_rowconfigure(i, minsize=35, weight=0)
         # On crée une zone de texte pour des messages de recommandation
         self.msg_text = StringVar()
-        self.msg = ttk.Label(self.right_frame, textvariable=self.msg_text, width=30, font=('Helvetica', 12))
+        self.msg = ttk.Label(self.left_frame, textvariable=self.msg_text, width=30, font=('Helvetica', 12))
         self.msg.grid(row=0, column=1)
         self.mode_var = StringVar(value=self.liste_modes[0])
-        self.mode_options = OptionMenu(self.right_frame, self.mode_var, *self.liste_modes)
+        self.mode_options = OptionMenu(self.left_frame, self.mode_var, *self.liste_modes)
         self.mode_options.config(width=30, font=('Helvetica', 12))
         self.mode_options.grid(row=1, column=1)
 
-        # On crée le controle nom_1)
+        # On crée le controle nom_1
         self.nom_1_entry = StringVar()
-        self.entry_nom_1 = ttk.Entry(self.right_frame, textvariable=self.nom_1_entry, font=('Helvetica', 12))#, command= self.mise_a_jour_nom_1)
+        self.entry_nom_1 = ttk.Entry(self.left_frame, textvariable=self.nom_1_entry, font=('Helvetica', 12))#, command= self.mise_a_jour_nom_1)
         self.entry_nom_1.config(state=DISABLED, width=30)
         self.entry_nom_1.grid(row=2, column=1, ipadx=18, ipady=3)
 
-        # On crée le controle nom_2)
+        # On crée le controle nom_2
         self.nom_2_entry = StringVar()
-        self.entry_nom_2 = ttk.Entry(self.right_frame, textvariable=self.nom_2_entry, font=('Helvetica', 12))#, command= self.mise_a_jour_nom_2)
+        self.entry_nom_2 = ttk.Entry(self.left_frame, textvariable=self.nom_2_entry, font=('Helvetica', 12))#, command= self.mise_a_jour_nom_2)
         self.entry_nom_2.config(state=DISABLED, width=30)
         self.entry_nom_2.grid(row=3, column=1, ipadx=18, ipady=3)
 
-        # On crée le controle catégorie du joueur 1
+        # On crée le controle catégorie du joueur 1.
         self.categorie_1_var = StringVar()
-        self.categorie_1 = ttk.Label(self.right_frame, textvariable=self.categorie_1_var, width=30, relief='ridge',
+        self.categorie_1 = ttk.Label(self.left_frame, textvariable=self.categorie_1_var, width=30, relief='ridge',
                                   font=('Helvetica', 12))
         self.categorie_1.grid(row=4, column=1, ipadx=18, ipady=3)
 
-        # On crée le controle catégorie du joueur 2
+        # On crée le controle catégorie du joueur 2.
         self.categorie_2_var = StringVar()
-        self.categorie_2 = ttk.Label(self.right_frame, textvariable=self.categorie_2_var, width=30, relief='ridge',
+        self.categorie_2 = ttk.Label(self.left_frame, textvariable=self.categorie_2_var, width=30, relief='ridge',
                                      font=('Helvetica', 12))
         self.categorie_2.grid(row=5, column=1, ipadx=18, ipady=3)
 
         # On crée le controle niveau
         self.niveau_var = StringVar(value=self.liste_niveaux[0])
-        self.niveau_options = OptionMenu(self.right_frame, self.niveau_var,self.liste_niveaux[1] ,*self.liste_niveaux)
+        self.niveau_options = OptionMenu(self.left_frame, self.niveau_var,self.liste_niveaux[1] ,*self.liste_niveaux)
         self.niveau_options.config(width=30, font=('Helvetica', 12))
         self.niveau_options.config(state=DISABLED)
         self.niveau_options.grid(row=6, column=1)
@@ -103,17 +103,17 @@ class View(ttk.Frame):
         self.joueur_qui_commence_var = StringVar()
         self.joueur_qui_commence_var.set(self.nom_1_entry.get())
         self.liste_joueurs=[self.nom_1_entry.get(),self.nom_2_entry.get()]
-        self.joueur_qui_commence_options = OptionMenu(self.right_frame, self.joueur_qui_commence_var, "Qui commence ?",*self.liste_joueurs)
+        self.joueur_qui_commence_options = OptionMenu(self.left_frame, self.joueur_qui_commence_var, "Qui commence ?",*self.liste_joueurs)
         self.joueur_qui_commence_options.config(width=30, font=('Helvetica', 12))
         self.joueur_qui_commence_options.config(state=DISABLED)
         self.joueur_qui_commence_options.grid(row=7, column=1)
 
         # Bouton pour confirmer les choix
-        self.btn_confirmer = Tk.Button(self.right_frame, text="Confirmer", width=30, command=self.confirmer_choix)
+        self.btn_confirmer = Tk.Button(self.left_frame, text="Confirmer", width=30, command=self.confirmer_choix)
         self.btn_confirmer.config(state=DISABLED)
-        self.btn_confirmer.grid(row=9, column=1, ipadx=20, ipady=3)
+        self.btn_confirmer.grid(row=10, column=1, ipadx=20, ipady=3)
 
-        self.right_frame.grid(row=0, column=1)
+        #self.right_frame.grid(row=0, column=1)
 
         self.frame.pack()
 
@@ -179,7 +179,7 @@ class View(ttk.Frame):
                 self.btn_confirmer.config(state='normal')
 
         def create_menu(values):
-            menu = Menu(self.joueur_qui_commence_options)
+            menu = Menu(self.joueur_qui_commence_options, tearoff=0)
             for value in values:
                 menu.add_radiobutton(label=value, variable=self.joueur_qui_commence_var, value=value)
             return menu
@@ -211,10 +211,11 @@ class View(ttk.Frame):
         niveau_choisi=self.niveau_var.get()
         categorie_1_choisie = self.categorie_1_var.get()
         categorie_2_choisie = self.categorie_2_var.get()
-        joueur_qui_commence = self.joueur_qui_commence_var.get()
+        nom_du_joueur_qui_commence = self.joueur_qui_commence_var.get()
+
         # Utilisation des valeurs choisies (par exemple, appel à une fonction du contrôleur)
         if self.controller:
-            self.controller.traiter_choix(mode_choisi, nom_1, nom_2, categorie_1_choisie, categorie_2_choisie, niveau_choisi, joueur_qui_commence)
+            self.controller.traiter_choix(mode_choisi, nom_1, nom_2, categorie_1_choisie, categorie_2_choisie, niveau_choisi, nom_du_joueur_qui_commence)
             self.controller.jouer()
 
     def set_controller(self, controller):
@@ -246,68 +247,93 @@ class TableauDeJeu(ttk.Frame):
         self.game.bind("<Button-1>", self.gestion_clic_gauche)
         self.game.bind("<Button-3>", self.gestion_clic_droit)
         # Création d'une frame à droite du tableau de jeu
-        self.frame_right = Frame(self, width=265, height= 425)
+        self.frame_right = ttk.Frame(self, width=265, height= 425)
         # Création à l'intérieur de la frame_right
         # de deux frames pour séparer les libellés et le contenu
-        self.frame_data_left = Frame(self.frame_right)
+        self.frame_data_left = ttk.Frame(self.frame_right)
+        self.frame_data_right = ttk.Frame(self.frame_right)
+        # self.frame_data_left.grid_rowconfigure(1, weight=1)
+        # self.frame_data_left.grid_columnconfigure(0, weight=1)
         # Déterminer la taille minimum des champs
-        for i in range(8):  # Supposons 3 lignes à aligner
-            self.frame_data_left.grid_rowconfigure(i, minsize=35, weight=0)
+        for i in range(10):  # Supposons 10 lignes à aligner
+            # print(f"i= {i}")
+            self.frame_data_left.grid_rowconfigure(i, minsize=35, weight=1)
 
         self.label_mode = ttk.Label(self.frame_data_left, text="Mode choisi", width=17, font=('Helvetica', 12))
         self.label_mode.grid(row=0, column=0)
 
-        self.label_mode = ttk.Label(self.frame_data_left, text="Nom joueur 1", width=17, font=('Helvetica', 12))
-        self.label_mode.grid(row=1, column=0)
+        self.label_nom_1 = ttk.Label(self.frame_data_left, text="Nom joueur 1", width=17, font=('Helvetica', 12))
+        self.label_nom_1.grid(row=1, column=0)
 
-        # self.label_mode = ttk.Label(self.frame_data_left, text="Catégorie 1", width=17, font=('Helvetica', 12))
-        # self.label_mode.grid(row=4, column=0)
+        self.label_categorie_1 = ttk.Label(self.frame_data_left, text="Catégorie 1", width=17, font=('Helvetica', 12))
+        self.label_categorie_1.grid(row=2, column=0)
 
-        self.label_mode = ttk.Label(self.frame_data_left, text="Nom joueur 2", width=17, font=('Helvetica', 12))
-        self.label_mode.grid(row=2, column=0)
+        self.label_nom_2 = ttk.Label(self.frame_data_left, text="Nom joueur 2", width=17, font=('Helvetica', 12))
+        self.label_nom_2.grid(row=3, column=0)
 
-        # self.label_mode = ttk.Label(self.frame_data_left, text="Catégorie 2", width=17, font=('Helvetica', 12))
-        # self.label_mode.grid(row=5, column=0)
+        self.label_categorie_2 = ttk.Label(self.frame_data_left, text="Catégorie 2", width=17, font=('Helvetica', 12))
+        self.label_categorie_2.grid(row=4, column=0)
 
-        self.label_mode = ttk.Label(self.frame_data_left, text="Niveau choisi", width=17, font=('Helvetica', 12))
-        self.label_mode.grid(row=3, column=0)
+        self.label_niveau = ttk.Label(self.frame_data_left, text="Niveau choisi", width=17, font=('Helvetica', 12))
+        self.label_niveau.grid(row=5, column=0)
 
-        self.label_mode = ttk.Label(self.frame_data_left, text="Celui qui commence", width=17, font=('Helvetica', 12))
-        self.label_mode.grid(row=4, column=0)
+        self.label_qui_commence = ttk.Label(self.frame_data_left, text="Celui qui commence", width=17, font=('Helvetica', 12))
+        self.label_qui_commence.grid(row=6, column=0)
 
-        self.frame_data_left.grid(row=0, column=0)
+        self.label_qui_joue = ttk.Label(self.frame_data_left, text="A qui de jouer ?", width=17, font=('Helvetica', 12))
+        self.label_qui_joue.grid(row=8, column=0, sticky = W)
 
-        self.frame_data_right = Frame(self.frame_right)
-        # Déterminer la taille minimum des champs
-        for i in range(8):  # Supposons 3 lignes à aligner
-            self.frame_data_right.grid_rowconfigure(i, minsize=35, weight=0)
+        #self.frame_data_left.grid(row=0, column=0)
+
+
+        # self.frame_data_right = Frame(self.frame_right)
+        # # Déterminer la taille minimum des champs
+        for i in range(10):  # Supposons 3 lignes à aligner
+            self.frame_data_right.grid_rowconfigure(i, minsize=35, weight=1)
 
         self.mode_jeu_text = StringVar()
         self.mode_jeu = ttk.Label(self.frame_data_right, textvariable=self.mode_jeu_text, width=10, relief='ridge',
                                   font=('Helvetica', 12))
-        self.mode_jeu.grid(row=0, column=0, ipadx=12, ipady=1)
+        self.mode_jeu.grid(row=0, column=1, ipadx=12, ipady=1, sticky = E)
 
         self.nom_j_1_text = StringVar()
         self.nom_j_1 = ttk.Label(self.frame_data_right, textvariable=self.nom_j_1_text, width=10, relief='ridge',
                                  font=('Helvetica', 12))
-        self.nom_j_1.grid(row=1, column=0, ipadx=12, ipady=1)
+        self.nom_j_1.grid(row=1, column=1, ipadx=12, ipady=1, sticky = E)
+
+        self.categorie_j_1_text = StringVar()
+        self.categorie_j_1 = ttk.Label(self.frame_data_right, textvariable=self.categorie_j_1_text, width=10, relief='ridge',
+                                 font=('Helvetica', 12))
+        self.categorie_j_1.grid(row=2, column=1, ipadx=12, ipady=1, sticky = E)
 
         self.nom_j_2_text = StringVar()
         self.nom_j_2 = ttk.Label(self.frame_data_right, textvariable=self.nom_j_2_text, width=10, relief='ridge',
                                  font=('Helvetica', 12))
-        self.nom_j_2.grid(row=2, column=0, ipadx=12, ipady=1)
+        self.nom_j_2.grid(row=3, column=1, ipadx=12, ipady=1, sticky = E)
+
+        self.categorie_j_2_text = StringVar()
+        self.categorie_j_2 = ttk.Label(self.frame_data_right, textvariable=self.categorie_j_2_text, width=10,
+                                       relief='ridge',
+                                       font=('Helvetica', 12))
+        self.categorie_j_2.grid(row=4, column=1, ipadx=12, ipady=1, sticky = E)
 
         self.niveau_text = StringVar()
         self.niveau_jeu = ttk.Label(self.frame_data_right, textvariable=self.niveau_text, width=10, relief='ridge',
                                     borderwidth=2, font=('Helvetica', 12))
-        self.niveau_jeu.grid(row=3, column=0, ipadx=12, ipady=1)
+        self.niveau_jeu.grid(row=5, column=1, ipadx=12, ipady=1, sticky = E)
 
         self.qui_commence_text = StringVar()
         self.qui_commence = ttk.Label(self.frame_data_right, textvariable=self.qui_commence_text, width=10, relief='ridge',
                                       borderwidth=2,
                                       font=('Helvetica', 12))
-        self.qui_commence.grid(row=4, column=0, ipadx=12, ipady=1)
+        self.qui_commence.grid(row=6, column=1, ipadx=12, ipady=1, sticky = E)
 
+        self.qui_joue_text = StringVar()
+        self.qui_joue = ttk.Label(self.frame_data_right, textvariable=self.qui_joue_text, width=10, relief='ridge',
+                                  borderwidth=2, font=('Helvetica', 12))
+        self.qui_joue.grid(row=8, column=1, ipadx=12, ipady=1, sticky = E)
+
+        self.frame_data_left.grid(row=0, column=0)
         self.frame_data_right.grid(row=0, column=1)
         self.frame_right.place(x=420, y=0)
 
@@ -315,34 +341,6 @@ class TableauDeJeu(ttk.Frame):
         self.resultat_jeu = ttk.Label(self, textvariable=self.resultat_jeu_text, justify=CENTER,
                                       relief='ridge', borderwidth=2, font=('Helvetica', 12))
         self.resultat_jeu.place(x=350, y=420, anchor='center')
-
-
-        # self.mode_jeu_text = StringVar()
-        # self.mode_jeu = ttk.Label(self.frame_data, textvariable=self.mode_jeu_text, width=50, relief='ridge', font=('Helvetica', 12))
-        # self.mode_jeu.place(x=450-425, y=10)
-        #
-        # self.nom_j_1_text = StringVar()
-        # self.nom_j_1 = ttk.Label(self.frame_data, textvariable=self.nom_j_1_text, width=50, relief='ridge',  font=('Helvetica', 12))
-        # self.nom_j_1.place(x= 450-425, y=40 )
-        #
-        # self.nom_j_2_text = StringVar()
-        # self.nom_j_2 = ttk.Label(self.frame_data, textvariable=self.nom_j_2_text,  width=50, relief='ridge', font=('Helvetica', 12))
-        # self.nom_j_2.place(x=450-425, y=70)
-        #
-        # self.niveau_text = StringVar()
-        # self.niveau_jeu = ttk.Label(self.frame_data, textvariable=self.niveau_text,  width=50, relief='ridge', borderwidth=2, font=('Helvetica', 12))
-        # self.niveau_jeu.place(x= 450-425, y=100)
-        #
-        # self.qui_commence_text = StringVar()
-        # self.qui_commence = ttk.Label(self.frame_data, textvariable=self.qui_commence_text, width=50, relief='ridge', borderwidth=2,
-        #                             font=('Helvetica', 12))
-        # self.qui_commence.place(x=450-425, y=130)
-        #
-        # self.resultat_jeu_text = StringVar()
-        # self.resultat_jeu = ttk.Label(self.frame_data, textvariable=self.resultat_jeu_text, justify=CENTER, relief='ridge', borderwidth=2,font=('Helvetica', 12))
-        # self.resultat_jeu.place(x=350, y=420, anchor='center')
-        #
-        # self.frame_data.place(x=425, y= 0)
 
         self.btn_rejouer = Tk.Button(self, text="Rejouer", width=50, font=('Helvetica', 12, 'bold'), command=self.controller.rejouer)
         self.btn_rejouer.place(x= 350, y=440, anchor='center')
@@ -357,16 +355,31 @@ class TableauDeJeu(ttk.Frame):
 
         self.grid(row=0, column=0, padx=10, pady=10)
 
-    # def cacher(self):
-    #     self.place_forget()
+    def cacher(self):
+        self.place_forget()
 
     def mettre_a_jour_case(self, x, y, motif):
         self.game.create_image( x , y , anchor = 'center', image = motif)
 
-    def mettre_a_jour_donnees(self, mode, nom_joueur_1, nom_joueur_2, niveau_jeu, nom_joueur, disable_rejouer):
+    def joueur_qui_doit_jouer_var(self, joueur_qui_doit_jouer):
+        # pass
+        self.qui_joue_text.set(joueur_qui_doit_jouer)
+        # self.update()
+
+    def mettre_a_jour_donnees(self, mode, nom_joueur_1, categorie_joueur_1, nom_joueur_2, categorie_joueur_2, niveau_jeu, nom_joueur, disable_rejouer):
+        # print("Mode choisi:", mode)
+        # print("Nom joueur 1:", nom_joueur_1)
+        # print("Catégorie du joueur 1:", categorie_joueur_1)
+        # print("Nom joueur 2:", nom_joueur_2)
+        # print("Catégorie du joueur 2:", categorie_joueur_2)
+        # print("Niveau choisi:", niveau_jeu)
+        # print("Joueur qui commence:", nom_joueur)
+
         self.mode_jeu_text.set(f"{mode}")
         self.nom_j_1_text.set(f"{nom_joueur_1}")
+        self.categorie_j_1_text.set(f"{categorie_joueur_1}")
         self.nom_j_2_text.set(f"{nom_joueur_2}")
+        self.categorie_j_2_text.set(f"{categorie_joueur_2}")
         self.niveau_text.set(f"{niveau_jeu}")
         self.qui_commence_text.set(f"{nom_joueur}")
         if disable_rejouer:
@@ -374,6 +387,7 @@ class TableauDeJeu(ttk.Frame):
             self.resultat_jeu.place_forget()
         else:
             self.btn_rejouer.config(state=NORMAL )
+        self.update()
 
 
     def ecrire_resultat(self, resultat_jeu, disable_rejouer):
@@ -385,8 +399,6 @@ class TableauDeJeu(ttk.Frame):
             self.resultat_jeu.place(x= 350, y=420, anchor='center')
 
     def gestion_clic_gauche(self,event):
-        # Récupération des coordonnées du clic
-        # x, y = event.x, event.y
         # L'opérateur // donne la division entière x//135
         x, y = event.x // 135, event.y // 135  # Acquisition clic joueur
         # self.msg_text = StringVar()
@@ -506,44 +518,44 @@ class StatsWindow(Tk.Toplevel):
         return width_column, total_width, total_height
 
 #-----------------------------------------------------------------
-class Identification(Tk.Toplevel):
-    def __init__(self, parent, controller):
-        super().__init__(parent)
-        self.controller = controller
-        #Tk.Frame.__init__(self, parent)
-        self.userid = ""
-        self.nom = ""
-        self.prenom = ""
-        self.ddn = '01/01/1900'
-        self.date_valide = False
-        self.data_p = []
-        self.userid_valide = False
-        self.prenom_valide = False
-        self.nom_valide = False
-        self.couleurFondMenu = 'lightyellow'
-        self.couleurFondExo = 'lightgreen'
-        # Tester l'existence du fichier
-        file_name = r"personnes.json"
-        if os.path.exists(file_name):
-            with open(file_name, 'r') as P_File:
-                self.data_p = json.load(P_File)
-        self.identite = Tk.StringVar()
-        if len(self.data_p) + 1 > 5:
-            hauteur = 5
-        else:
-            hauteur = len(self.data_p) + 1
-        self.liste_P = Tk.Listbox(self, height=hauteur + 1, width=50, state='normal')
-        self.liste_P.title = "Choisissez votre nom dans la liste ou ajoutez le en cliquant sur le bouton 'Ajouter un " \
-                             "utilisateur' "
-        self.liste_P.pack()
-        for x in range(len(self.data_p)):
-            self.liste_P.insert(END, "{0}-{1}-{2}".format(self.data_p[x]["Userid"], self.data_p[x]["firstName"],
-                                                          self.data_p[x]["lastName"]))
-        self.liste_P.focus_set()
-        self.liste_P.index(2)
-        self.liste_P.activate (2)
-        self.liste_P.bind('<Return>', self.focusliste_p)
-
-    def focusliste_p(self, event=None):
-        self.liste_P.focus_set()
+# class Identification(Tk.Toplevel):
+#     def __init__(self, parent, controller):
+#         super().__init__(parent)
+#         self.controller = controller
+#         #Tk.Frame.__init__(self, parent)
+#         self.userid = ""
+#         self.nom = ""
+#         self.prenom = ""
+#         self.ddn = '01/01/1900'
+#         self.date_valide = False
+#         self.data_p = []
+#         self.userid_valide = False
+#         self.prenom_valide = False
+#         self.nom_valide = False
+#         self.couleurFondMenu = 'lightyellow'
+#         self.couleurFondExo = 'lightgreen'
+#         # Tester l'existence du fichier
+#         file_name = r"personnes.json"
+#         if os.path.exists(file_name):
+#             with open(file_name, 'r') as P_File:
+#                 self.data_p = json.load(P_File)
+#         self.identite = Tk.StringVar()
+#         if len(self.data_p) + 1 > 5:
+#             hauteur = 5
+#         else:
+#             hauteur = len(self.data_p) + 1
+#         self.liste_P = Tk.Listbox(self, height=hauteur + 1, width=50, state='normal')
+#         self.liste_P.title = "Choisissez votre nom dans la liste ou ajoutez le en cliquant sur le bouton 'Ajouter un " \
+#                              "utilisateur' "
+#         self.liste_P.pack()
+#         for x in range(len(self.data_p)):
+#             self.liste_P.insert(END, "{0}-{1}-{2}".format(self.data_p[x]["Userid"], self.data_p[x]["firstName"],
+#                                                           self.data_p[x]["lastName"]))
+#         self.liste_P.focus_set()
+#         self.liste_P.index(2)
+#         self.liste_P.activate (2)
+#         self.liste_P.bind('<Return>', self.focusliste_p)
+#
+#     def focusliste_p(self, event=None):
+#         self.liste_P.focus_set()
 

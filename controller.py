@@ -13,6 +13,8 @@ class Controller:
         self.view = view
 
 #----------------------------------------------------------------------
+    def donne_modes_categories_niveaux(self):
+        return self.model.modes, self.model.categories, self.model.niveaux
 
     def traiter_choix(self, mode_choisi, nom_1, nom_2, categorie_1_choisie, categorie_2_choisie, niveau_choisi, joueur_qui_commence):
         # Appel de la fonction statique "@staticmethod" "new" du modèle "Model"
@@ -21,7 +23,9 @@ class Controller:
         self.view.grid_remove()
 
         self.tableaumorpion()
-        self.tableaudejeu.mettre_a_jour_donnees(mode_choisi, nom_1, nom_2, niveau_choisi, joueur_qui_commence,True)
+        self.tableaudejeu.mettre_a_jour_donnees(mode_choisi, nom_1, categorie_1_choisie, nom_2, categorie_2_choisie, niveau_choisi, joueur_qui_commence,True)
+        self.tableaudejeu.joueur_qui_doit_jouer_var(self.model.joueur_en_cours.nom)
+
         self.model.gameOn=True
 
     def jouer(self, ligne: int=10, colonne:int = 10, reponse=False):
@@ -73,18 +77,14 @@ class Controller:
 
     def rejouer(self):
         print("Appui sur le bouton Rejouer")
-        if self.model.joueur_qui_commence==self.model.joueur_1.nom:
-            self.model.joueur_qui_commence=self.model.joueur_2.nom
-            self.model.joueur_en_cours =self.model.joueur_2
+        if self.model.joueur_qui_commence == self.model.joueur_1.nom:
+            self.model.joueur_qui_commence = self.model.joueur_2.nom
         else:
             self.model.joueur_qui_commence = self.model.joueur_1.nom
-            self.model.joueur_en_cours = self.model.joueur_1
-
         self.model = Model.new(self, self.model.mode, self.model.joueur_1.nom, self.model.joueur_2.nom, self.model.joueur_1.categorie, self.model.joueur_2.categorie, self.model.niveau,
                                self.model.joueur_qui_commence)
         self.tableaumorpion()
-        self.tableaudejeu.mettre_a_jour_donnees(self.model.mode, self.model.joueur_1.nom, self.model.joueur_2.nom, self.model.niveau, self.model.joueur_qui_commence, True)
-
+        self.tableaudejeu.mettre_a_jour_donnees(self.model.mode, self.model.joueur_1.nom, self.model.joueur_1.categorie, self.model.joueur_2.nom, self.model.joueur_2.categorie, self.model.niveau, self.model.joueur_qui_commence, True)
         self.jouer()
 
     def voir_stats(self):
@@ -124,3 +124,6 @@ class Controller:
 
     def ecrire_dans_tabeau_de_jeu(self, ligne, colonne, joueur_en_cours):
         self.tableaudejeu.mettre_a_jour_case(68 + ligne * 135, 68 + colonne * 135, joueur_en_cours.motif)
+
+    def mise_a_jour_joueur_qui_doit_jouer(self, maj_joueur_qui_doit_jouer):
+        self.tableaudejeu.joueur_qui_doit_jouer_var(maj_joueur_qui_doit_jouer)
